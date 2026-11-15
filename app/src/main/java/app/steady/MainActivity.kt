@@ -184,21 +184,39 @@ private fun SafeScreen(padding: PaddingValues, open: (Lesson) -> Unit) {
 
 @Composable
 private fun HelpScreen(padding: PaddingValues) {
+    var selected by remember { mutableStateOf<String?>(null) }
+
     Column(Modifier.fillMaxSize().padding(padding).padding(24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Text("Something isn't right?", fontSize = 32.sp, fontWeight = FontWeight.SemiBold)
         Text("You don't need to know the technical answer. Start with what happened.", fontSize = 19.sp, lineHeight = 27.sp)
-        HelpButton("My phone is showing strange ads")
-        HelpButton("I received a strange message")
-        HelpButton("Someone called me")
-        HelpButton("I installed something and now my phone is strange")
-        HelpButton("I clicked something by mistake")
-        HelpButton("I don't know what to do")
+        HelpButton("My phone is showing strange ads") { selected = "Strange ads" }
+        HelpButton("I received a strange message") { selected = "Strange message" }
+        HelpButton("Someone called me") { selected = "Unexpected call" }
+        HelpButton("I installed something and now my phone is strange") { selected = "Strange app" }
+        HelpButton("I clicked something by mistake") { selected = "I clicked something" }
+        HelpButton("I don't know what to do") { selected = "I don't know" }
+    }
+
+    if (selected != null) {
+        AlertDialog(
+            onDismissRequest = { selected = null },
+            title = { Text(selected!!) },
+            text = {
+                Text(
+                    "Stop before you click, pay, install anything or share information. " +
+                        "Close the message or popup if you can. If you are still unsure, ask someone you trust."
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { selected = null }) { Text("Got it") }
+            }
+        )
     }
 }
 
 @Composable
-private fun HelpButton(label: String) {
-    OutlinedButton(onClick = { }, modifier = Modifier.fillMaxWidth().height(58.dp)) {
+private fun HelpButton(label: String, onClick: () -> Unit) {
+    OutlinedButton(onClick = onClick, modifier = Modifier.fillMaxWidth().height(58.dp)) {
         Text(label, fontSize = 18.sp)
     }
 }
